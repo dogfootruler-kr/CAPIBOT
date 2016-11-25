@@ -39,8 +39,6 @@ namespace Capibot.Discord.Events
             }
             if (e.Message.Text == "!cat")
             {
-                //Thread t = new Thread(new ParameterizedThreadStart(randomcat));
-                //t.Start(e.Channel);
                 string s;
                 using (WebClient webclient = new WebClient())
                 {

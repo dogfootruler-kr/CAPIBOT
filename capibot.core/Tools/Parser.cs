@@ -13,6 +13,6 @@ namespace Capibot.Core.Tools
         {
 
         }
-
+        
     }
 }
