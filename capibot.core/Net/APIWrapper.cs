@@ -36,7 +36,7 @@ namespace Capibot.Core.Net
 
                 if (summoners.Count < 0)
                 {
-                    return $"Désolé nous n'avons rien trouvé pour {username}, vueillez vérifier votre orthographe ou réessayer plus tard.";
+                    return String.Format("Désolé nous n'avons rien trouvé pour {0}, vueillez vérifier votre orthographe ou réessayer plus tard.", username);
                 }
                 long summonerId = summoners[username.ToLower()].Id;
                 var summonerLeaguesByIds = riotClient.League.GetSummonerLeaguesByIds(RiotApiConfig.Regions.EUW, summonerId);
@@ -51,7 +51,7 @@ namespace Capibot.Core.Net
                 {
                     i++;
                     var moreInfo = league.Entries.Where(sum => sum.PlayerOrTeamName.ToLower() == username.ToLower()).First();
-                    result += $"{username} est dans la league {league.Name}, {league.Tier} division {moreInfo.Division} en {RiotApiEnumsDisplay.GetDisplayForQueueType(league.Queue)} ({moreInfo.LeaguePoints} points). {moreInfo.Wins}W/{moreInfo.Losses}L";
+                    result += String.Format("{0} est dans la league {1}, {2} division {3} en {4} ({5} points). {6}W/{7}L", username, league.Name, league.Tier, moreInfo.Division, RiotApiEnumsDisplay.GetDisplayForQueueType(league.Queue), moreInfo.LeaguePoints, moreInfo.Wins, moreInfo.Losses);
                     if (nbOfLeague > i)
                     {
                         result += "\n";
@@ -64,7 +64,7 @@ namespace Capibot.Core.Net
             {
                 if (exception.RiotErrorCode == RiotExceptionRaiser.RiotErrorCode.DATA_NOT_FOUND)
                 {
-                    return $"RiotApiException: {exception.RiotErrorCode}";
+                    return String.Format("RiotApiException: {0}", exception.RiotErrorCode);
                 }
 
                 return "Undefined exception";
