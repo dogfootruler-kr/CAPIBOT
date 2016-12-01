@@ -4,38 +4,41 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
+using Capibot.Core.Net;
 
 namespace Capibot.Discord.Events
 {
     public static class MessageEvent
     {
+        static string[] func = {
+            "!cat",
+            "!help",
+            "!lol Username"
+        };
+
         public static void Received(object sender, MessageEventArgs e)
         {
-            if (e.Message.Text == "!admin")
+            if (e.Message.Text.StartsWith("!lol"))
             {
-                bool isadmin = false;
-                IEnumerable<Role> roles = e.User.Roles;
-                foreach (Role role in roles)
+                APIWrapper api = new APIWrapper();
+                if (e.Message.Text.Length < 6)
                 {
-                    if (role.Name.Contains("Administrator"))
-                    {
-                        isadmin = true;
-                    }
+                    e.Channel.SendMessage("Vueillez spécifier votre nom de joueur. Exemple: !lol Faker");
+                    return;
                 }
-                if (isadmin)
-                {
-                    e.Channel.SendMessage("Yes, you are! :D");
-                }
-                else
-                {
-                    e.Channel.SendMessage("No, you aren't :c");
-                }
+
+                string summonerName = e.Message.Text.Remove(0, 5).Replace('\n', ' ');
+                string result = api.getSummonersInfo(summonerName);
+                e.Channel.SendMessage(result);
             }
             if (e.Message.Text == "!help")
             {
-                e.Channel.SendMessage("This is a public message!");
-                // Because this is a public message, 
-                // the bot should send a message to the channel the message was received.
+                string response = "";
+                foreach (string cmd in func)
+                {
+                    response += $"{cmd}\n";
+                }
+                e.Channel.SendMessage(response);
             }
             if (e.Message.Text == "!cat")
             {
@@ -57,13 +60,14 @@ namespace Capibot.Discord.Events
 
         public static void Deleted(object sender, MessageEventArgs e)
         {
-            e.Channel.SendMessage("Removing messages has been disabled on this server!");
-            e.Channel.SendMessage("<@" + e.Message.User.Id + "> sent: " + e.Message.Text);
+            //e.Channel.SendMessage("Removing messages has been disabled on this server!");
+            //e.Channel.SendMessage("<@" + e.Message.User.Id + "> sent: " + e.Message.Text);
         }
 
         public static void Updated(object sender, MessageUpdatedEventArgs e)
         {
-
+            //e.Channel.SendMessage("Opopop garçon, il est interdit d'update sa phrase sur ce serveur! \\o");
+            //e.Channel.SendMessage($"<@{e.User.Nickname} sent: {e.Before.Text}");
         }
     }
 }
