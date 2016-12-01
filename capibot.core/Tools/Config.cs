@@ -16,9 +16,15 @@ namespace Capibot.Core.Tools
 
             if (string.IsNullOrEmpty(apiKey))
             {
-                // token name: discordToken
-                Console.WriteLine("If you want to use the discord API, you need to put your token in your environment.");
-                throw new Exception();
+                var section = ConfigurationManager.GetSection("appSettings") as NameValueCollection;
+                apiKey = section[tokenName];
+
+                if (string.IsNullOrEmpty(apiKey))
+                {
+                    // token name: discordToken
+                    Console.WriteLine("If you want to use the discord API, you need to put your token in your environment.");
+                    throw new Exception();
+                }
             }
 
             return apiKey;
