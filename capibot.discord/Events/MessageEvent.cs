@@ -36,7 +36,7 @@ namespace Capibot.Discord.Events
                 string response = "";
                 foreach (string cmd in func)
                 {
-                    response += $"{cmd}\n";
+                    response += String.format("{0}\n", cmd);
                 }
                 e.Channel.SendMessage(response);
             }
