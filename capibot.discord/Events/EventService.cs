@@ -9,7 +9,6 @@ namespace Capibot.Discord.Events
 {
     public class EventService
     {
-
         public static void LaunchEventService(DiscordClient client)
         {
             #region MessageEvent
@@ -20,8 +19,6 @@ namespace Capibot.Discord.Events
             client.MessageUpdated += MessageEvent.Updated;
 
             #endregion
-
-
         }
     }
 }

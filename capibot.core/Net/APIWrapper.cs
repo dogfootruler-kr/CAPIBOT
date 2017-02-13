@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Capibot.Core.Tools;
 using Capibot.Core.Helper;
-using RiotApi.Net.RestClient;
-using RiotApi.Net.RestClient.Configuration;
-using RiotApi.Net.RestClient.Helpers;
-using RiotApi.Net.RestClient.Dto.League;
+using RiotSharp;
 
 namespace Capibot.Core.Net
 {
     public class APIWrapper
     {
-        private IRiotClient riotClient;
+        private RiotApi riotClient;
         public APIWrapper()
         {
             string apiKey = Config.GetToken("lolToken");
@@ -25,33 +22,31 @@ namespace Capibot.Core.Net
                 throw new Exception();
             }
 
-            riotClient = new RiotClient(apiKey);
+            riotClient = RiotApi.GetInstance(apiKey);
         }
 
         public string getSummonersInfo(string username)
         {
             try
             {
-                var summoners = riotClient.Summoner.GetSummonersByName(RiotApiConfig.Regions.EUW, username);
-
-                if (summoners.Count < 0)
-                {
-                    return String.Format("Désolé nous n'avons rien trouvé pour {0}, vueillez vérifier votre orthographe ou réessayer plus tard.", username);
-                }
-                long summonerId = summoners[username.ToLower()].Id;
-                var summonerLeaguesByIds = riotClient.League.GetSummonerLeaguesByIds(RiotApiConfig.Regions.EUW, summonerId);
-
-                IEnumerable<LeagueDto> leaguesOfSummoner = summonerLeaguesByIds[summonerId.ToString()];
-
-                int nbOfLeague = leaguesOfSummoner.Count<LeagueDto>();
-                int i = 0;
+                RiotSharp.SummonerEndpoint.Summoner summoner = riotClient.GetSummoner(Region.euw, username);
+                List<RiotSharp.LeagueEndpoint.League> rankedStats = summoner.GetLeagues();
                 string result = "";
+                int i = 0;
+                int nbOfLeague = rankedStats.Count();
 
-                foreach (var league in leaguesOfSummoner)
+                foreach (var league in rankedStats)
                 {
+                    string displayQueue = RiotApiEnumsDisplay.GetDisplayForQueueType(league.Queue);
+                    string tier = league.Tier.ToString();
+                    string leagueName = league.Name.ToString();
+                    string division = league.Entries[0].Division.ToString();
+                    string wins = league.Entries[0].Wins.ToString();
+                    string losses = league.Entries[0].Losses.ToString();
+                    string leaguePoints = league.Entries[0].LeaguePoints.ToString();
+                    result += String.Format("{0} est dans la league {1}, {2} division {3} en {4} ({5} points). {6}W/{7}L", username, leagueName,
+                        tier, division, displayQueue, leaguePoints, wins, losses);
                     i++;
-                    var moreInfo = league.Entries.Where(sum => sum.PlayerOrTeamName.ToLower() == username.ToLower()).First();
-                    result += String.Format("{0} est dans la league {1}, {2} division {3} en {4} ({5} points). {6}W/{7}L", username, league.Name, league.Tier, moreInfo.Division, RiotApiEnumsDisplay.GetDisplayForQueueType(league.Queue), moreInfo.LeaguePoints, moreInfo.Wins, moreInfo.Losses);
                     if (nbOfLeague > i)
                     {
                         result += "\n";
@@ -60,14 +55,9 @@ namespace Capibot.Core.Net
 
                 return result;
             }
-            catch (RiotExceptionRaiser.RiotApiException exception)
+            catch (RiotSharpException ex)
             {
-                if (exception.RiotErrorCode == RiotExceptionRaiser.RiotErrorCode.DATA_NOT_FOUND)
-                {
-                    return String.Format("RiotApiException: {0}", exception.RiotErrorCode);
-                }
-
-                return "Undefined exception";
+                return String.Format("Désolé nous n'avons rien trouvé pour {0}, vueillez vérifier votre orthographe ou réessayer plus tard.", username);
             }
         }
     }
