@@ -29,15 +29,18 @@ namespace Capibot.Core.Net
         {
             try
             {
+                List<RiotSharp.LeagueEndpoint.League> rankedStats;
+                RiotSharp.SummonerEndpoint.Summoner summoner;
+                
                 try {
-                    RiotSharp.SummonerEndpoint.Summoner summoner = riotClient.GetSummoner(Region.euw, username);
+                    summoner = riotClient.GetSummoner(Region.euw, username);
                 }
                 catch (RiotSharpException ex) {
                     return String.Format("Désolé nous n'avons rien trouvé pour {0}, veuillez vérifier votre orthographe ou réessayer plus tard.", username);
                 }
 
                 try {
-                    List<RiotSharp.LeagueEndpoint.League> rankedStats = summoner.GetLeagues();
+                    rankedStats = summoner.GetLeagues();
                 }
                 catch (RiotSharpException ex) {
                     return String.Format("{0} est unranked.", username);
