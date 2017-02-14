@@ -14,16 +14,16 @@ namespace Capibot.Core.Helper
                     display = "Solo queue 5 vs 5";
                     break;
                 case Queue.RankedFlexSR:
-                    display = "Ranked Summoner's rift";
+                    display = "Flex 5 vs 5";
                     break;
                 case Queue.RankedFlexTT:
-                    display = "Ranked Flex Twisted Treeline";
+                    display = "Flex 3 vs 3";
                     break;
                 case Queue.RankedTeam3x3:
-                    display = "Ranked Team 3x3";
+                    display = "Ranked Team 3 vs 3";
                     break;
                 case Queue.RankedTeam5x5:
-                    display = "Ranked Team 5x5";
+                    display = "Ranked Team 5 vs 5";
                     break;
                 case Queue.TeamBuilderDraftRanked5x5:
                     display = "Team 5 v 5 - Dynamic Queue - Ranked";
