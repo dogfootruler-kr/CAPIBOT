@@ -31,7 +31,7 @@ namespace Capibot.Core.Net
             {
                 RiotSharp.SummonerEndpoint.Summoner summoner = riotClient.GetSummoner(Region.euw, username);
 
-                if (summoner.Count() == 0) {
+                if (summoner == null) {
                     return String.Format("Désolé nous n'avons rien trouvé pour {0}, veuillez vérifier votre orthographe ou réessayer plus tard.", username);
                 }
 
