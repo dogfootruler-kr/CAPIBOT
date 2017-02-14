@@ -31,7 +31,7 @@ namespace Capibot.Core.Net
             {
                 RiotSharp.SummonerEndpoint.Summoner summoner = riotClient.GetSummoner(Region.euw, username);
 
-                if (!summoner) {
+                if (summoner.Count() == 0) {
                     return String.Format("Désolé nous n'avons rien trouvé pour {0}, veuillez vérifier votre orthographe ou réessayer plus tard.", username);
                 }
 
@@ -67,7 +67,7 @@ namespace Capibot.Core.Net
             }
             catch (RiotSharpException ex)
             {
-                return String.Format("Exception stacktrace: {0}", ex.stacktrace);
+                return String.Format("Exception stacktrace: {0}", ex.StackTrace);
             }
         }
     }
