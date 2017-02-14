@@ -57,7 +57,7 @@ namespace Capibot.Core.Net
             }
             catch (RiotSharpException ex)
             {
-                return String.Format("Désolé nous n'avons rien trouvé pour {0}, vueillez vérifier votre orthographe ou réessayer plus tard.", username);
+                return String.Format("Désolé nous n'avons rien trouvé pour {0}, veuillez vérifier votre orthographe ou réessayer plus tard.", username);
             }
         }
     }
