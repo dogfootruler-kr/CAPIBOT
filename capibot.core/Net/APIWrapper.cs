@@ -30,7 +30,17 @@ namespace Capibot.Core.Net
             try
             {
                 RiotSharp.SummonerEndpoint.Summoner summoner = riotClient.GetSummoner(Region.euw, username);
+
+                if (!summoner) {
+                    return String.Format("Désolé nous n'avons rien trouvé pour {0}, veuillez vérifier votre orthographe ou réessayer plus tard.", username);
+                }
+
                 List<RiotSharp.LeagueEndpoint.League> rankedStats = summoner.GetLeagues();
+
+                if (rankedStats.Count() == 0) {
+                    return String.Format("{0} est unranked.", username);
+                }
+
                 string result = "";
                 int i = 0;
                 int nbOfLeague = rankedStats.Count();
@@ -57,7 +67,7 @@ namespace Capibot.Core.Net
             }
             catch (RiotSharpException ex)
             {
-                return String.Format("Désolé nous n'avons rien trouvé pour {0}, veuillez vérifier votre orthographe ou réessayer plus tard.", username);
+                return String.Format("Exception stacktrace: {0}", ex.stacktrace);
             }
         }
     }
