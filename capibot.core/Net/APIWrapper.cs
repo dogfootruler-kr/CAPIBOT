@@ -35,7 +35,7 @@ namespace Capibot.Core.Net
         {
             try
             {
-                if (staticListItem == null)
+                if (staticListItem == null || itemName.ToLower() == "clearcache")
                 {
                     staticListItem = staticRiotAPI.GetItems(Region.euw, ItemData.all, Language.fr_FR).Items;
                 }
