@@ -47,22 +47,16 @@ namespace Capibot.Core.Net
                 List<KeyValuePair<int, ItemStatic>> retrievedItems = staticListItem.Where(x => (x.Value.Name != null && x.Value.Name.ToLower().Contains(itemName.ToLower())) || (x.Key == itemNbr)).ToList();
                 int listLength = retrievedItems.Count;
                 string result = "";
-                int i = 0;
 
                 if (listLength == 1)
                 {
-                    result = String.Format("Name : {0}\nDescription: {1}\n", retrievedItems[0].Value.Name, retrievedItems[0].Value.SanitizedDescription);
+                    result = String.Format("Nom : {0}\nDescription: {1}\n", retrievedItems[0].Value.Name, retrievedItems[0].Value.SanitizedDescription);
                     return result;
                 }
 
                 foreach (KeyValuePair<int, ItemStatic> item in retrievedItems)
                 {
-                    result += String.Format("- {0} (id: {1})", item.Value.Name, item.Key);
-                    i++;
-                    if (i < listLength)
-                    {
-                        result += "\n";
-                    }
+                    result += String.Format("- {0} (id: {1})\n", item.Value.Name, item.Key);
                 }
 
                 if (result.Length > 2000)
@@ -102,8 +96,6 @@ namespace Capibot.Core.Net
                 }
 
                 string result = "";
-                int i = 0;
-                int nbOfLeague = rankedStats.Count();
 
                 foreach (var league in rankedStats)
                 {
@@ -114,13 +106,8 @@ namespace Capibot.Core.Net
                     string wins = league.Entries[0].Wins.ToString();
                     string losses = league.Entries[0].Losses.ToString();
                     string leaguePoints = league.Entries[0].LeaguePoints.ToString();
-                    result += String.Format("{0} est dans la league {1}, {2} division {3} en {4} ({5} points). {6}W/{7}L", username, leagueName,
+                    result += String.Format("{0} est dans la league {1}, {2} division {3} en {4} ({5} points). {6}W/{7}L\n", username, leagueName,
                         tier, division, displayQueue, leaguePoints, wins, losses);
-                    i++;
-                    if (nbOfLeague > i)
-                    {
-                        result += "\n";
-                    }
                 }
 
                 return result;

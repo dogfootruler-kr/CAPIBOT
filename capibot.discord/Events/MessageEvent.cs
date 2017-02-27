@@ -11,7 +11,6 @@ namespace Capibot.Discord.Events
     public static class MessageEvent
     {
         static string[] func = {
-            "!cat",
             "!help",
             "!lol Username",
             "!item ItemName/ItemID"
@@ -56,8 +55,6 @@ namespace Capibot.Discord.Events
             }
             if (e.Message.Text == "!cat")
             {
-                //Thread t = new Thread(new ParameterizedThreadStart(randomcat));
-                //t.Start(e.Channel);
                 string s;
                 using (WebClient webclient = new WebClient())
                 {
