@@ -31,6 +31,19 @@ namespace Capibot.Discord.Events
                 string result = api.getSummonersInfo(summonerName);
                 e.Channel.SendMessage(result);
             }
+            if (e.Message.Text.StartsWith("!item"))
+            {
+                APIWrapper api = new APIWrapper();
+                if (e.Message.Text.Length < 7)
+                {
+                    e.Channel.SendMessage("Vueillez spécifier votre nom de joueur. Exemple: !item warmog");
+                    return;
+                }
+
+                string itemName = e.Message.Text.Remove(0, 6).Replace('\n', ' ');
+                string result = api.getItemInfo(itemName);
+                e.Channel.SendMessage(result);
+            }
             if (e.Message.Text == "!help")
             {
                 string response = "";

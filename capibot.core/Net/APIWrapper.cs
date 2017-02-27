@@ -4,17 +4,22 @@ using System.Linq;
 using Capibot.Core.Tools;
 using Capibot.Core.Helper;
 using RiotSharp;
+using RiotSharp.StaticDataEndpoint;
+using RiotSharp.LeagueEndpoint;
+using RiotSharp.SummonerEndpoint;
 
 namespace Capibot.Core.Net
 {
     public class APIWrapper
     {
-        private RiotApi riotClient;
+        private RiotApi riotAPI;
+        private StaticRiotApi staticRiotAPI;
+        private Dictionary<int, ItemStatic> staticListItem = null;
+
         public APIWrapper()
         {
             string apiKey = Config.GetToken("lolToken");
-
-            //string apiKey = Config.GetToken("lol_token");
+            
             if (string.IsNullOrEmpty(apiKey))
             {
                 // token name: lolToken
@@ -22,18 +27,63 @@ namespace Capibot.Core.Net
                 throw new Exception();
             }
 
-            riotClient = RiotApi.GetInstance(apiKey);
+            riotAPI = RiotApi.GetInstance(apiKey);
+            staticRiotAPI = StaticRiotApi.GetInstance(apiKey);
+        }
+        
+        public string getItemInfo(string itemName)
+        {
+            try
+            {
+                if (staticListItem == null)
+                {
+                    staticListItem = staticRiotAPI.GetItems(Region.euw, ItemData.all, Language.fr_FR).Items;
+                }
+
+                int itemNbr = 0;
+
+                Int32.TryParse(itemName, out itemNbr);
+
+                List<KeyValuePair<int, ItemStatic>> retrievedItems = staticListItem.Where(x => (x.Value.Name != null && x.Value.Name.Contains(itemName)) || (x.Key == itemNbr)).ToList();
+                int listLength = retrievedItems.Count;
+                string result = "";
+                int i = 0;
+
+                if (listLength == 1)
+                {
+                    result = String.Format("Name : {0}\nDescription: {1}\n", retrievedItems[0].Value.Name, retrievedItems[0].Value.SanitizedDescription);
+                    return result;
+                }
+
+                foreach (KeyValuePair<int, ItemStatic> item in retrievedItems)
+                {
+                    result += String.Format("- {0} (id: {1})", item.Value.Name, item.Key);
+                    i++;
+                    if (i < listLength)
+                    {
+                        result += "\n";
+                    }
+                }
+
+                result = !string.IsNullOrEmpty(result) ? result : "Je n'ai trouvé aucun item.";
+
+                return result;
+
+            } catch (RiotSharpException ex)
+            {
+                return String.Format("Désolé nous n'avons rien trouvé pour {0}, veuillez vérifier votre orthographe ou réessayer plus tard.", itemName);
+            }
         }
 
         public string getSummonersInfo(string username)
         {
             try
             {
-                List<RiotSharp.LeagueEndpoint.League> rankedStats;
-                RiotSharp.SummonerEndpoint.Summoner summoner;
+                List<League> rankedStats;
+                Summoner summoner;
                 
                 try {
-                    summoner = riotClient.GetSummoner(Region.euw, username);
+                    summoner = riotAPI.GetSummoner(Region.euw, username);
                 }
                 catch (RiotSharpException ex) {
                     return String.Format("Désolé nous n'avons rien trouvé pour {0}, veuillez vérifier votre orthographe ou réessayer plus tard.", username);
