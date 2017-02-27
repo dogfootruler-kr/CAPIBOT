@@ -44,7 +44,7 @@ namespace Capibot.Core.Net
 
                 Int32.TryParse(itemName, out itemNbr);
 
-                List<KeyValuePair<int, ItemStatic>> retrievedItems = staticListItem.Where(x => (x.Value.Name != null && x.Value.Name.Contains(itemName)) || (x.Key == itemNbr)).ToList();
+                List<KeyValuePair<int, ItemStatic>> retrievedItems = staticListItem.Where(x => (x.Value.Name != null && x.Value.Name.ToLower().Contains(itemName.ToLower())) || (x.Key == itemNbr)).ToList();
                 int listLength = retrievedItems.Count;
                 string result = "";
                 int i = 0;
