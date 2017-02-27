@@ -13,7 +13,7 @@ namespace Capibot.Discord.Events
         static string[] func = {
             "!help",
             "!lol Username",
-            "!item ItemName/ItemID"
+            "!item ItemName/ItemID (use !item clearcache to clear the cache)"
         };
 
         public static void Received(object sender, MessageEventArgs e)
