@@ -13,7 +13,8 @@ namespace Capibot.Discord.Events
         static string[] func = {
             "!cat",
             "!help",
-            "!lol Username"
+            "!lol Username",
+            "!item ItemName/ItemID"
         };
 
         public static void Received(object sender, MessageEventArgs e)
