@@ -67,7 +67,7 @@ namespace Capibot.Core.Net
 
                 if (result.Length > 2000)
                 {
-                    return String.Format("Désolé nous n'avons rien trouvé trop de résultat. (Limitation 2000 caractères par Discord)", itemName);
+                    return String.Format("Désolé nous avons trouvé trop de résultat. (Limitation 2000 caractères par Discord)", itemName);
                 }
 
                 result = !string.IsNullOrEmpty(result) ? result : "Je n'ai trouvé aucun item.";
