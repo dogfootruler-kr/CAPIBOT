@@ -21,11 +21,11 @@ namespace Capibot.Discord
                 x.HelpMode = HelpMode.Public;
             });
 
+            InitialiseCommands();
+
             client.ExecuteAndWait(async () => {
                 await client.Connect(Config.GetToken("discordToken"), TokenType.Bot);
             });
-
-            InitialiseCommands();
         }
 
         private static void InitialiseCommands()
