@@ -1,11 +1,10 @@
-﻿using System;
-using RiotSharp;
+﻿using RiotSharp.Misc;
 
 namespace Capibot.Core.Helper
 {
     public class RiotApiEnumsDisplay
     {
-        public static string GetDisplayForQueueType(RiotSharp.Queue gameQueueType)
+        public static string GetDisplayForQueueType(string gameQueueType)
         {
             string display;
             switch (gameQueueType)
@@ -32,7 +31,7 @@ namespace Capibot.Core.Helper
                     display = "Team 5 v 5 - Dynamic Queue - Unranked";
                     break;
                 default:
-                    display = String.Empty;
+                    display = string.Empty;
                     break;
             }
             return display;

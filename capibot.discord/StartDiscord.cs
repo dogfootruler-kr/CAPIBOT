@@ -1,66 +1,62 @@
-﻿using Capibot.Discord.Events;
-using Capibot.Core.Tools;
+﻿using System;
+using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Capibot.Core.Net;
+using Discord.WebSocket;
+using Capibot.Discord.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Capibot.Discord
 {
-    class StartDiscord
+    public class StartDiscord
     {
-        static DiscordClient client = new DiscordClient();
-        static APIWrapper api = new APIWrapper();
+        public IConfigurationRoot Configuration { get; }
 
-        static void Main(string[] args)
+        public StartDiscord(string[] args)
         {
-            EventService.LaunchEventService(client);
-
-            client.UsingCommands(x =>
-            {
-                x.PrefixChar = '!';
-                x.HelpMode = HelpMode.Public;
-            });
-
-            InitialiseCommands();
-
-            client.ExecuteAndWait(async () => {
-                await client.Connect(Config.GetToken("discordToken"), TokenType.Bot);
-            });
+            var builder = new ConfigurationBuilder()        // Create a new instance of the config builder
+                .SetBasePath(AppContext.BaseDirectory)      // Specify the default location for the config file
+                .AddJsonFile("_configuration.json");        // Add this (json encoded) file to the configuration
+            Configuration = builder.Build();                // Build the configuration
         }
 
-        private static void InitialiseCommands()
+        public static async Task RunAsync(string[] args)
         {
-            client.GetService<CommandService>().CreateCommand("lol")
-                 .Description("Récupère le classement League Of Legends d'un joueur.")
-                 .Parameter("userName", ParameterType.Required)
-                 .Do(async e =>
-                 {
-                     string userName = e.GetArg(0);
-                     if (string.IsNullOrEmpty(userName))
-                     {
-                         await e.Channel.SendMessage("Vueillez spécifier votre nom de joueur. Exemple: !lol Faker");
-                         return;
-                     }
+            var startup = new StartDiscord(args);
+            await startup.RunAsync();
+        }
 
-                     string result = api.getSummonersInfo(userName);
-                     await e.Channel.SendMessage(result);
-                 });
+        public async Task RunAsync()
+        {
+            var services = new ServiceCollection();             // Create a new instance of a service collection
+            ConfigureServices(services);
 
-            client.GetService<CommandService>().CreateCommand("item")
-                 .Description("Récupère la description d'un objet de League Of Legends. (!item clearcache pour mettre a jour le cache)")
-                 .Parameter("itemName/itemID", ParameterType.Required)
-                 .Do(async e =>
-                 {
-                     string itemName = e.GetArg(0);
-                     if (string.IsNullOrEmpty(itemName))
-                     {
-                         await e.Channel.SendMessage("Vueillez spécifier votre nom de joueur. Exemple: !item warmog");
-                         return;
-                     }
+            var provider = services.BuildServiceProvider();     // Build the service provider
+            provider.GetRequiredService<LoggingService>();      // Start the logging service
+            provider.GetRequiredService<CommandHandler>(); 		// Start the command handler service
 
-                     string result = api.getItemInfo(itemName);
-                     await e.Channel.SendMessage(result);
-                 });
+            await provider.GetRequiredService<StartupService>().StartAsync();       // Start the startup service
+            await Task.Delay(-1);                               // Keep the program alive
+        }
+
+        private void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
+            {                                       // Add discord to the collection
+                LogLevel = LogSeverity.Verbose,     // Tell the logger to give Verbose amount of info
+                MessageCacheSize = 1000             // Cache 1,000 messages per channel
+            }))
+            .AddSingleton(new CommandService(new CommandServiceConfig
+            {                                       // Add the command service to the collection
+                LogLevel = LogSeverity.Verbose,     // Tell the logger to give Verbose amount of info
+                DefaultRunMode = RunMode.Async,     // Force all commands to run async by default
+                CaseSensitiveCommands = false       // Ignore case when executing commands
+            }))
+            .AddSingleton<StartupService>()         // Add startupservice to the collection
+            .AddSingleton<LoggingService>()         // Add loggingservice to the collection
+            .AddSingleton<CommandHandler>()         // Add CommandHandler to the collection
+            .AddSingleton(Configuration);           // Add the configuration to the collection
         }
     }
 }
