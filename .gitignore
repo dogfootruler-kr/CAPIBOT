@@ -6,7 +6,7 @@
 *.user
 *.userosscache
 *.sln.docstates
-_configuration.json
+capibot.discord/_configuration.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
